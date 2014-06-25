@@ -2,25 +2,27 @@
 
 /* App Module */
 
-var phonecatApp = angular.module('roadApp', [
+var roadApp = angular.module('roadApp', [
     'ngRoute',
-    'roadControllers',
-    'roadFilters',
-    'roadServices'
+    'roadControllers'
 ]);
 
-phonecatApp.config(['$routeProvider',
+roadApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
-            when('/phones', {
-                templateUrl: 'partials/phone-list.html',
-                controller: 'PhoneListCtrl'
+            when('/', {
+                templateUrl: 'partials/default.html',
+                controller: 'DefaultCtrl'
+            }).
+            when('/roads/:roadId', {
+                templateUrl: 'partials/road.html',
+                controller: 'RoadCtrl'
             }).
             when('/phones/:phoneId', {
                 templateUrl: 'partials/phone-detail.html',
                 controller: 'PhoneDetailCtrl'
             }).
             otherwise({
-                redirectTo: '/phones'
+                redirectTo: '/#'
             });
     }]);

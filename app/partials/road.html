@@ -1,0 +1,21 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <span><strong>Имя дороги:</strong> {{road.name}}</span>
+                <span><strong>Шаг:</strong> {{road.step}}</span>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Координаты дороги</div>
+            <div class="panel-body">
+                <table class="table">
+                    <tr ng-repeat="coordinate in road.coordinates track by $index">
+                        <td>{{coordinate.x}}</td>
+                        <td>{{coordinate.y}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

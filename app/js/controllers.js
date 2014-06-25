@@ -2,19 +2,18 @@
 
 /* Controllers */
 
-var phonecatControllers = angular.module('phonecatControllers', []);
+var roadControllers = angular.module('roadControllers', []);
 
-phonecatControllers.controller('PhoneListCtrl', ['$scope', 'Phone',
-    function($scope, Phone) {
-        $scope.phones = Phone.query();
-        $scope.orderProp = 'age';
+roadControllers.controller('DefaultCtrl', ['$scope',
+    function($scope) {
+        $scope.test = 'age';
+        $scope.roads = roads;
     }]);
 
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone',
-    function($scope, $routeParams, Phone) {
-        $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
-            $scope.mainImageUrl = phone.images[0];
-        });
+roadControllers.controller('RoadCtrl', ['$scope', '$routeParams',
+    function($scope, $routeParams) {
+
+        $scope.road = new Road(roads[$routeParams.roadId]);
 
         $scope.setImage = function(imageUrl) {
             $scope.mainImageUrl = imageUrl;

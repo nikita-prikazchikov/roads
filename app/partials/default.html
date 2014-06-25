@@ -1,0 +1,20 @@
+<div class="container-fluid">
+    <div class="row">
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Step</th>
+                <th>Points count</th>
+                <th>Actions</th>
+            </tr>
+            <tr ng-repeat="road in roads">
+                <td>{{road.name}}</td>
+                <td>{{road.step}}</td>
+                <td>{{road.coordinates.length}}</td>
+                <td>
+                    <a href="#/roads/{{road.id}}" type="button" class="btn btn-default btn-xs">View</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
