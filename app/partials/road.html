@@ -10,9 +10,8 @@
             <div class="panel-heading">Показать/скрыть</div>
             <div class="panel-body">
                 <button class="btn btn-default" ng-click="visible.coordinates=!visible.coordinates">Координаты</button>
-                <button class="btn btn-default" ng-click="visible.average=!visible.average">Среднее</button>
-                <button class="btn btn-default" ng-click="visible.smoothed=!visible.smoothed">Сглаженный профиль</button>
                 <button class="btn btn-default" ng-click="visible.correlation=!visible.correlation">Корреляционная функция</button>
+                <button class="btn btn-default" ng-click="visible.results=!visible.results">Результаты</button>
             </div>
         </div>
         <div class="panel panel-default">
@@ -21,74 +20,114 @@
                 <div class="col-md-1">
                     <input type="text" class="form-control" placeholder="Длина сглаживания" ng-model="base">
                 </div>
-                <button class="btn btn-default" ng-click="visible.average=true;calculateAverageRoad(base)">Среднее</button>
-                <button class="btn btn-default" ng-click="visible.smoothed=true;calculateSmoothedRoad()">Сглаженный профиль</button>
-                <button class="btn btn-default" ng-click="visible.correlation=true;calculateCorrelation()">Корреляционная функция</button>
+                <button class="btn btn-default" ng-click="visible.correlation=true;calculateRoad(base)">Обработать профиль на одной базе</button>
+                <button class="btn btn-default" ng-click="visible.results=true;calculateRoadOnMultipleBases()">Обработать профиль</button>
             </div>
         </div>
 
         <div class="row">
-        <div class="col-md-4">
-        <div class="panel panel-default" ng-show="visible.coordinates">
-            <div class="panel-heading">Координаты дороги</div>
-            <div class="panel-body">
-                <table class="table">
-                    <tr ng-repeat="coordinate in road.coordinates track by $index">
-                        <td>{{coordinate.x}}</td>
-                        <td>{{coordinate.y}}</td>
-                    </tr>
-                </table>
+            <div class="col-md-4">
+                <div class="panel panel-default" ng-show="visible.correlation">
+                    <div class="panel-heading">Параметры</div>
+                    <div class="panel-body">
+                        <dl>
+                            <dt>Мат ожидание</dt>
+                            <dd>{{smoothedRoad.expectationValue}}</dd>
+                            <dt>Дисперсия</dt>
+                            <dd>{{smoothedRoad.dispertion}}</dd>
+                            <dt>Тау</dt>
+                            <dd>{{smoothedRoad.tau}}</dd>
+                            <dt>Альфа</dt>
+                            <dd>{{smoothedRoad.alpha}}</dd>
+                            <dt>Бета</dt>
+                            <dd>{{smoothedRoad.beta}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-default" ng-show="visible.correlation">
+                    <div class="panel-heading">Автокорреляционная функция</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr ng-repeat="value in smoothedRoad.correlation track by $index">
+                                <td>{{$index * smoothedRoad.step}}</td>
+                                <td>{{value}}</td>
+                                <td>{{smoothedRoad.correlationMath[$index]}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
 
-        <div class="col-md-4">
-        <div class="panel panel-default" ng-show="visible.average">
-            <div class="panel-heading">Усредненная дорога</div>
-            <div class="panel-body">
-                <table class="table">
-                    <tr ng-repeat="coordinate in averageRoad.coordinates track by $index">
-                        <td>{{coordinate.x}}</td>
-                        <td>{{coordinate.y}}</td>
-                    </tr>
-                </table>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default" ng-show="visible.coordinates">
+                    <div class="panel-heading">Координаты дороги</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr ng-repeat="coordinate in road.coordinates track by $index">
+                                <td>{{coordinate.x}}</td>
+                                <td>{{coordinate.y}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-default" ng-show="visible.coordinates">
+                    <div class="panel-heading">Усредненная дорога</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr ng-repeat="coordinate in averageRoad.coordinates track by $index">
+                                <td>{{coordinate.x}}</td>
+                                <td>{{coordinate.y}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-default" ng-show="visible.coordinates">
+                    <div class="panel-heading">Сглаженная дорога</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr ng-repeat="coordinate in smoothedRoad.coordinates track by $index">
+                                <td>{{coordinate.x}}</td>
+                                <td>{{coordinate.y}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
 
-        <div class="col-md-4">
-        <div class="panel panel-default" ng-show="visible.smoothed">
-            <div class="panel-heading">Сглаженная дорога</div>
-            <div class="panel-body">
-                <table class="table">
-                    <tr ng-repeat="coordinate in smoothedRoad.coordinates track by $index">
-                        <td>{{coordinate.x}}</td>
-                        <td>{{coordinate.y}}</td>
-                    </tr>
-                </table>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default" ng-show="visible.results">
+                    <div class="panel-heading">Результаты</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tr>
+                                <th>Длина сглаживания</th>
+                                <th>Альфа</th>
+                                <th>Бета</th>
+                                <th>Дисперсия</th>
+                            </tr>
+                            <tr ng-repeat="element in results">
+                                <td>{{element.averageRoad.base}}</td>
+                                <td>{{element.alpha}}</td>
+                                <td>{{element.beta}}</td>
+                                <td>{{element.dispertion}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-        </div>
-
-        <div class="col-md-4">
-        <div class="panel panel-default" ng-show="visible.correlation">
-            <div class="panel-heading">Автокорреляционная функция</div>
-            <div class="panel-body">
-                <dl>
-                    <dt>Мат ожидание</dt>
-                    <dd>{{smoothedRoad.expectationValue}}</dd>
-                    <dt>Дисперсия</dt>
-                    <dd>{{smoothedRoad.dispertion}}</dd>
-                </dl>
-                <table class="table">
-                    <tr ng-repeat="value in smoothedRoad.correlation track by $index">
-                        <td>{{value}}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        </div>
-
         </div>
     </div>
 </div>

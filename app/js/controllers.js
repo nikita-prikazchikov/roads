@@ -14,26 +14,37 @@ roadControllers.controller('RoadCtrl', ['$scope', '$routeParams',
     function($scope, $routeParams) {
         $scope.visible ={
             coordinates : false,
-            average : false,
-            smoothed : false,
-            correlation : false
+            correlation : false,
+            results : false
         };
 
         $scope.road = new Road(roads[$routeParams.roadId]);
         $scope.base = 10;
+        $scope.results = [];
 
-        $scope.calculateAverageRoad = function(base) {
-//            $scope.base++;
+        $scope.calculateRoad = function(base) {
+
             $scope.averageRoad = new AverageRoad($scope.road);
-            $scope.averageRoad.calculateAverageRoad(base)
-        };
-        $scope.calculateSmoothedRoad = function() {
+            $scope.averageRoad.calculateAverageRoad(base);
+
             $scope.smoothedRoad = new SmoothedRoad($scope.averageRoad);
-            $scope.smoothedRoad.calculate();
+            $scope.smoothedRoad.approximate();
         };
-        $scope.calculateCorrelation = function() {
-            $scope.smoothedRoad.calculateExpectationValue();
-            $scope.smoothedRoad.calculateDispersion();
-            $scope.smoothedRoad.calculateCorrelation();
+
+        $scope.calculateRoadOnMultipleBases = function() {
+
+            $scope.results = [];
+
+            var bases = [1.11, 1.38, 1.66, 1.85, 2.08, 2.22, 2.77, 2.78, 3.46, 3.7, 4.62, 5.53, 5.55, 7.4, 8.3, 9.23, 11.1, 13.85, 16.6, 22.2, 27.7];
+
+            for ( var i = 0; i < bases.length; i ++) {
+                var base = bases[i];
+                var averageRoad = new AverageRoad($scope.road);
+                averageRoad.calculateAverageRoad(base);
+
+                var smoothedRoad = new SmoothedRoad(averageRoad);
+                smoothedRoad.approximate();
+                $scope.results.push(smoothedRoad);
+            }
         };
     }]);

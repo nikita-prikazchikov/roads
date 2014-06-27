@@ -58,9 +58,13 @@ function SmoothedRoad(averageRoad){
     this.averageRoad = averageRoad;
     this.coordinates = [];
     this.correlation = [];
+    this.correlationMath = [];
     this.step = averageRoad.step;
     this.expectationValue = 0;
     this.dispertion = 0;
+    this.tau = 0;
+    this.alpha = 0;
+    this.beta = 0;
 }
 SmoothedRoad.prototype.calculate = function(){
     for ( var index = 0; index < this.averageRoad.coordinates.length; index ++ ){
@@ -97,4 +101,39 @@ SmoothedRoad.prototype.calculateCorrelation =function (){
             break;
         }
     }
+};
+SmoothedRoad.prototype.calculateApproximation = function() {
+
+    var x = this.correlation.length - 1;
+    var k = this.correlation[x] - this.correlation[x-1]/this.step;
+    this.tau = - ( this.correlation[x] - k * x * this.step ) / k;
+
+    this.beta = Math.PI / ( 2 * this.tau );
+
+    var s1 = 0;
+    var s2 = 0;
+    for ( var i = 0; i < x; i++ ){
+        var tau = i * this.step;
+        var ro_tau = this.correlation[ i ];
+        s1 += Math.abs( tau * (Math.log( Math.abs(ro_tau / Math.cos( this.beta * tau )))));
+        s2 += tau * tau;
+    }
+    if ( this.tau < this.step ){
+        this.alpha = 1;
+    }
+    else {
+        this.alpha = s1 / s2;
+    }
+
+    this.correlationMath = [];
+    for ( i = 0; i < this.correlation.length; i++ ){
+        this.correlationMath.push(Math.exp(-this.alpha * i * this.step) * Math.cos(this.beta * this.step * i));
+    }
+};
+SmoothedRoad.prototype.approximate = function(){
+    this.calculate();
+    this.calculateExpectationValue();
+    this.calculateDispersion();
+    this.calculateCorrelation();
+    this.calculateApproximation();
 };
